@@ -1,6 +1,7 @@
 import numpy as np
 import face_recognition as fr
 import cv2
+import threading
 
 video_capture = cv2.VideoCapture(0)
 
@@ -17,6 +18,10 @@ while True:
     
     face_locations = fr.face_locations(rgb_frame)
     face_encodings = fr.face_encodings(rgb_frame, face_locations)
+    
+    # Create a new thread to perform face recognition on the frame
+    t = threading.Thread(target=recognize_faces, args=(frame,))
+    t.start()
     
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
         
@@ -43,4 +48,8 @@ while True:
     
 video_capture.release()
 cv2.destroyAllWindows()
+
+# Start capturing video and performing face recognition in a separate thread
+t = threading.Thread(target=capture_video)
+t.start()
 
